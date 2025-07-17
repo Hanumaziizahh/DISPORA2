@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Inventaris Barang Pakai Habis - DISPORA Kota Tangerang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #004aad;
+            --secondary: #f8f9fa;
+            --accent: #ff6b00;
+            --text: #333;
+            --light: #fff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: var(--light);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo img {
+            height: 50px;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+        .profile-menu img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light);
+        }
+        .profile-menu button {
+            background-color: transparent;
+            border: none;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-menu .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--light);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .profile-menu .dropdown-content a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .profile-menu .dropdown-content a:hover {
+            background-color: var(--secondary);
+        }
+
+        .profile-menu.active .dropdown-content {
+            display: block;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 20px auto;
+            background-color: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Info Boxes styles */
+        .info-boxes {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .info-box {
+            background-color: var(--secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .info-box h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+
+        .info-box p {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 250px;
+        }
+
+        .search-bar input {
+            border: none;
+            padding: 0.75rem;
+            flex-grow: 1;
+            font-size: 1rem;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+        }
+
+        .search-bar button {
+            background-color: #f0f0f0;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            color: var(--text);
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .month-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .month-filter label {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .month-filter select {
+            padding: 0.65rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            min-width: 120px;
+        }
+
+        button.add-button {
+            background-color: var(--accent);
+            color: var(--light);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button.add-button:hover {
+            background-color: #e65c00;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .inventory-table th, .inventory-table td {
+            border: 1px solid black;
+            padding: 0.8rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .inventory-table th {
+            background-color: var(--primary);
+            color: var(--light);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .inventory-table thead th {
+            text-align: center;
+        }
+
+        .inventory-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .inventory-table tfoot {
+            font-weight: bold;
+            background-color: #e9e9e9;
+        }
+        .inventory-table tfoot td {
+            border-top: 2px solid var(--primary);
+        }
+
+        .inventory-table tfoot td[id$="Unit"],
+        .inventory-table tfoot td[id$="Rp"] {
+            text-align: right;
+        }
+
+        .inventory-table tfoot td:first-child {
+            text-align: right;
+        }
+
+
+        .action-buttons button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-buttons button.edit-button:hover {
+            background-color: #003a80;
+        }
+
+        .action-buttons button.delete-button {
+            background-color: #dc3545;
+        }
+
+        .action-buttons button.delete-button:hover {
+            background-color: #c82333;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Changed to none */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--light);
+            margin: auto;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .modal-buttons button.save-button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons button.save-button:hover {
+            background-color: #003a80;
+        }
+
+        .modal-buttons button.cancel-button {
+            background-color: #6c757d;
+            color: var(--light);
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons button.cancel-button:hover {
+            background-color: #5a6268;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Notification Badge Styles */
+        .notification-badge {
+            background-color: var(--accent); /* Orange color for notification */
+            color: var(--light);
+            border-radius: 50%;
+            padding: 2px 7px; /* Adjust padding to control size */
+            font-size: 0.7em;
+            position: absolute; /* Position relative to its parent <a> */
+            top: 5px; /* Adjust top and right to fine-tune position */
+            right: 5px;
+            transform: translate(50%, -50%); /* Center the badge */
+            min-width: 20px; /* Ensure it's wide enough for a single digit */
+            text-align: center;
+            line-height: 1.2;
+            display: none; /* Hidden by default, show only when there are notifications */
+        }
+
+        /* To ensure proper positioning of the badge */
+        nav ul li a {
+            position: relative;
+            padding-right: 25px; /* Add some padding to the right to make space for the badge */
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-bar {
+                width: 100%;
+            }
+            .month-filter {
+                width: 100%;
+                justify-content: center;
+            }
+            .month-filter select {
+                flex-grow: 1;
+            }
+            button.add-button {
+                width: 100%;
+            }
+            .info-boxes {
+                justify-content: flex-start;
+            }
+            .info-box {
+                width: 120px;
+                padding: 0.8rem;
+            }
+            .info-box h3 {
+                font-size: 0.9rem;
+            }
+            .info-box p {
+                font-size: 1.2rem;
+            }
+            .inventory-table th, .inventory-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo DISPORA">
+            <div class="logo-text">
+                <h1>DISPORA KOTA TANGERANG</h1>
+                <p>Sistem Inventaris Barang Pakai Habis</p>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="inputbarang.html">Input Barang</a></li>
+                <li><a href="barangmasuk1.html">Barang Masuk</a></li>
+                <li><a href="inventaris.html">Permintaan Barang</a></li>
+<<<<<<< HEAD
+                <li>
+                    <a href="pengaturan.html" class="active">
+                        Daftar Permintaan
+                        <span id="notificationBadge" class="notification-badge"></span>
+                    </a>
+                </li>
+=======
+>>>>>>> 934faa44a913cbd42243c32f005e139aa51a1cf1
+                <li><a href="laporan.html">Cetak Laporan</a></li>
+            </ul>
+        </nav>
+        <div class="profile-menu" id="profileMenu">
+            <button>
+                <img src="logo.png" alt="Logo DISPORA"> Admin
+            </button>
+            <div class="dropdown-content">
+                <a href="profile.html">Profil</a>
+                <a href="settings.html">Pengaturan</a>
+                <a href="index.html">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>Data Barang Masuk</h2>
+
+        <div class="info-boxes">
+            <div class="info-box">
+                <h3>Total Saldo Awal (Unit)</h3>
+                <p id="totalInfoInitialBalanceUnit">0</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Saldo Awal (Rp.)</h3>
+                <p id="totalInfoInitialBalanceRp">Rp 0,00</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Penerimaan (Pengadaan Baru) (Unit)</h3>
+                <p id="totalInfoNewReceiptUnit">0</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Penerimaan (Pengadaan Baru) (Rp.)</h3>
+                <p id="totalInfoNewReceiptRp">Rp 0,00</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Pengeluaran (Unit)</h3>
+                <p id="totalInfoExpenditureUnit">0</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Pengeluaran (Rp.)</h3>
+                <p id="totalInfoExpenditureRp">Rp 0,00</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Saldo Akhir (Unit)</h3>
+                <p id="totalInfoFinalStockUnit">0</p>
+            </div>
+            <div class="info-box">
+                <h3>Total Saldo Akhir (Rp.)</h3>
+                <p id="totalInfoFinalStockRp">Rp 0,00</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Cari Kode/Nama Barang/Keterangan...">
+                <button type="button" id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="month-filter">
+                <label for="monthFilter">Filter Bulan:</label>
+                <select id="monthFilter">
+                    <option value="">Semua Bulan</option>
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            <button class="add-button" id="openModal">Tambah Barang</button>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">No.</th>
+                        <th rowspan="2">Kode Barang</th>
+                        <th rowspan="2">Nama Barang / Spesifikasi Barang</th>
+                        <th rowspan="2">Satuan</th>
+                        <th rowspan="2">Harga Satuan (Rp.)</th>
+                        <th rowspan="2">Tanggal Masuk</th>
+                        <th colspan="2">Saldo Awal (Saldo Akhir Bulan Sebelumnya)</th>
+                        <th colspan="2">Penerimaan (Pengadaan Baru)</th>
+                        <th colspan="2">Pengeluaran</th>
+                        <th rowspan="2">Tanggal Pengeluaran</th>
+                        <th colspan="2">Saldo Akhir</th>
+                        <th rowspan="2">Keterangan</th>
+                        <th rowspan="2">Aksi</th>
+                    </tr>
+                    <tr>
+                        <th>Unit</th>
+                        <th>Rp.</th>
+                        <th>Unit</th>
+                        <th>Rp.</th>
+                        <th>Unit</th>
+                        <th>Rp.</th>
+                        <th>Unit</th>
+                        <th>Rp.</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" style="text-align: left;">Total Keseluruhan:</td>
+                        <td id="totalTableInitialBalanceUnit">0</td>
+                        <td id="totalTableInitialBalanceRp">0,00</td>
+                        <td id="totalTableNewReceiptUnit">0</td>
+                        <td id="totalTableNewReceiptRp">0,00</td>
+                        <td id="totalTableExpenditureUnit">0</td>
+                        <td id="totalTableExpenditureRp">0,00</td>
+                        <td></td> <td id="totalTableFinalStockUnit">0</td>
+                        <td id="totalTableFinalStockRp">0,00</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 DISPORA Kota Tangerang. All Rights Reserved.</p>
+    </footer>
+
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalButton">&times;</span>
+            <h3 id="modalTitle">Tambah Barang Baru</h3>
+            <form id="itemForm">
+                <input type="hidden" id="itemId">
+                <div class="form-group">
+                    <label for="itemCode">Kode Barang</label>
+                    <input type="text" id="itemCode" placeholder="Masukkan Kode Barang" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Nama Barang / Spesifikasi Barang</label>
+                    <input type="text" id="itemName" placeholder="Masukkan Nama Barang" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemType">Kategori</label>
+                    <select id="itemType" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="ATK">ATK</option>
+                        <option value="Elektronik">Elektronik</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Kebersihan">Kebersihan</option>
+                        <option value="Lain-lain">Lain-lain</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemUnit">Satuan</label>
+                    <select id="itemUnit" required>
+                        <option value="">Pilih Satuan</option>
+                        <option value="Pcs">Pcs</option>
+                        <option value="Rim">Rim</option>
+                        <option value="Box">Box</option>
+                        <option value="Pack">Pack</option>
+                        <option value="Set">Set</option>
+                        <option value="Unit">Unit</option>
+                        <option value="Roll">Roll</option>
+                        <option value="Dus">Dus</option>
+                        <option value="Botol">Botol</option>
+                        <option value="Liter">Liter</option>
+                        <option value="Meter">Meter</option>
+                        <option value="Buah">Buah</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemPrice">Harga Satuan (Rp.)</label>
+                    <input type="number" id="itemPrice" placeholder="Masukkan Harga Satuan" required value="0">
+                </div>
+                <div class="form-group">
+                    <label for="itemDate">Tanggal Masuk</label>
+                    <input type="date" id="itemDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="initialBalanceUnit">Saldo Awal (Unit)</label>
+                    <input type="number" id="initialBalanceUnit" placeholder="Masukkan Saldo Awal Unit" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="initialBalanceRp">Saldo Awal (Rp.)</label>
+                    <input type="number" id="initialBalanceRp" placeholder="Saldo Awal Rupiah Otomatis" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="newReceiptUnit">Penerimaan (Pengadaan Baru) (Unit)</label>
+                    <input type="number" id="newReceiptUnit" placeholder="Masukkan Penerimaan (Pengadaan Baru) Unit" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="newReceiptRp">Penerimaan (Pengadaan Baru) (Rp.)</label>
+                    <input type="number" id="newReceiptRp" placeholder="Penerimaan (Pengadaan Baru) Rupiah Otomatis" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="expenditureUnit">Pengeluaran (Unit)</label>
+                    <input type="number" id="expenditureUnit" placeholder="Masukkan Pengeluaran Unit" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenditureRp">Pengeluaran (Rp.)</label>
+                    <input type="number" id="expenditureRp" placeholder="Pengeluaran Rupiah Otomatis" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="expenditureDate">Tanggal Pengeluaran Terakhir</label>
+                    <input type="date" id="expenditureDate">
+                </div>
+                <div class="form-group">
+                    <label for="finalStockUnit">Saldo Akhir (Unit)</label>
+                    <input type="number" id="finalStockUnit" placeholder="Saldo Akhir Unit Otomatis" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="finalStockRp">Saldo Akhir (Rp.)</label>
+                    <input type="number" id="finalStockRp" placeholder="Saldo Akhir Rupiah Otomatis" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="itemNotes">Keterangan</label>
+                    <textarea id="itemNotes" placeholder="Masukkan Keterangan"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="save-button">Simpan</button>
+                    <button type="button" class="cancel-button" id="cancelModalButton">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const openModalButton = document.getElementById('openModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const cancelModalButton = document.getElementById('cancelModalButton');
+        const itemModal = document.getElementById('itemModal');
+        const itemForm = document.getElementById('itemForm');
+        const modalTitle = document.getElementById('modalTitle');
+
+        const itemId = document.getElementById('itemId');
+        const itemCode = document.getElementById('itemCode');
+        const itemName = document.getElementById('itemName');
+        const itemType = document.getElementById('itemType');
+        const itemUnit = document.getElementById('itemUnit'); 
+        const itemPrice = document.getElementById('itemPrice');
+        const itemDate = document.getElementById('itemDate');
+        const initialBalanceUnit = document.getElementById('initialBalanceUnit');
+        const initialBalanceRp = document.getElementById('initialBalanceRp');
+        const newReceiptUnit = document.getElementById('newReceiptUnit'); 
+        const newReceiptRp = document.getElementById('newReceiptRp');     
+        const expenditureUnit = document.getElementById('expenditureUnit');
+        const expenditureRp = document.getElementById('expenditureRp');
+        const expenditureDateInput = document.getElementById('expenditureDate');
+        const finalStockUnit = document.getElementById('finalStockUnit');
+        const finalStockRp = document.getElementById('finalStockRp');
+        const itemNotes = document.getElementById('itemNotes');
+        const inventoryTableBody = document.getElementById('inventoryTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton'); 
+        const monthFilter = document.getElementById('monthFilter');
+
+        const totalTableInitialBalanceUnit = document.getElementById('totalTableInitialBalanceUnit');
+        const totalTableInitialBalanceRp = document.getElementById('totalTableInitialBalanceRp');
+        const totalTableNewReceiptUnit = document.getElementById('totalTableNewReceiptUnit');     
+        const totalTableNewReceiptRp = document.getElementById('totalTableNewReceiptRp');         
+        const totalTableExpenditureUnit = document.getElementById('totalTableExpenditureUnit');
+        const totalTableExpenditureRp = document.getElementById('totalTableExpenditureRp');
+        const totalTableFinalStockUnit = document.getElementById('totalTableFinalStockUnit');
+        const totalTableFinalStockRp = document.getElementById('totalTableFinalStockRp');
+
+        const totalInfoInitialBalanceUnit = document.getElementById('totalInfoInitialBalanceUnit');
+        const totalInfoInitialBalanceRp = document.getElementById('totalInfoInitialBalanceRp');
+        const totalInfoNewReceiptUnit = document.getElementById('totalInfoNewReceiptUnit');     
+        const totalInfoNewReceiptRp = document.getElementById('totalInfoNewReceiptRp');         
+        const totalInfoExpenditureUnit = document.getElementById('totalInfoExpenditureUnit');
+        const totalInfoExpenditureRp = document.getElementById('totalInfoExpenditureRp');
+        const totalInfoFinalStockUnit = document.getElementById('totalInfoFinalStockUnit');
+        const totalInfoFinalStockRp = document.getElementById('totalInfoFinalStockRp');
+
+        const notificationBadge = document.getElementById('notificationBadge'); // Added for notification badge
+
+        let inventoryData = JSON.parse(localStorage.getItem('inventoryData')) || [];
+        let permintaanBarangData = JSON.parse(localStorage.getItem('permintaanBarangData')) || [];
+
+        function updateCalculatedFields() {
+            const price = parseFloat(itemPrice.value) || 0;
+            const initialUnit = parseInt(initialBalanceUnit.value) || 0;
+            const newReceiptU = parseInt(newReceiptUnit.value) || 0; 
+            const expenditureU = parseInt(expenditureUnit.value) || 0;
+
+            initialBalanceUnit.value = initialUnit;
+            newReceiptUnit.value = newReceiptU;
+            expenditureUnit.value = expenditureU;
+
+            initialBalanceRp.value = (initialUnit * price).toFixed(2);
+            newReceiptRp.value = (newReceiptU * price).toFixed(2); 
+            expenditureRp.value = (expenditureU * price).toFixed(2);
+
+            const finalUnit = (initialUnit + newReceiptU) - expenditureU;
+            finalStockUnit.value = finalUnit;
+
+            const finalRp = (finalUnit * price); 
+            finalStockRp.value = finalRp.toFixed(2);
+        }
+
+        itemPrice.addEventListener('focus', function() {
+            if (this.value === '0') {
+                this.value = '';
+            }
+        });
+
+        itemPrice.addEventListener('blur', function() {
+            if (this.value === '' || parseFloat(this.value) === 0) {
+                this.value = '0';
+            }
+            updateCalculatedFields();
+        });
+
+        itemPrice.addEventListener('input', updateCalculatedFields);
+        initialBalanceUnit.addEventListener('input', updateCalculatedFields);
+        newReceiptUnit.addEventListener('input', updateCalculatedFields); 
+        expenditureUnit.addEventListener('input', updateCalculatedFields);
+
+
+        function openModal(item = null) {
+            itemModal.style.display = 'flex';
+            
+            itemId.value = '';
+            itemCode.value = '';
+            itemName.value = '';
+            itemType.value = '';
+            itemUnit.value = '';
+            itemPrice.value = '0';
+            itemDate.value = '';
+            initialBalanceUnit.value = 0;
+            initialBalanceRp.value = 0;
+            newReceiptUnit.value = 0;
+            newReceiptRp.value = 0;
+            expenditureUnit.value = 0;
+            expenditureRp.value = 0;
+            expenditureDateInput.value = '';
+            finalStockUnit.value = 0;
+            finalStockRp.value = 0;
+            itemNotes.value = '';
+
+            if (item) {
+                modalTitle.textContent = 'Edit Barang';
+                itemId.value = item.id;
+                itemCode.value = item.code;
+                itemName.value = item.name;
+                itemType.value = item.type;
+                itemUnit.value = item.unit; 
+                itemPrice.value = item.price;
+                itemDate.value = item.date;
+                initialBalanceUnit.value = item.initialBalanceUnit;
+                initialBalanceRp.value = item.initialBalanceRp;
+                newReceiptUnit.value = item.newReceiptUnit;     
+                newReceiptRp.value = item.newReceiptRp;         
+                expenditureUnit.value = item.expenditureUnit;
+                expenditureRp.value = item.expenditureRp; 
+                expenditureDateInput.value = item.expenditureDate || '';
+                finalStockUnit.value = item.finalStockUnit; 
+                finalStockRp.value = item.finalStockRp; 
+                itemNotes.value = item.notes || '';
+                updateCalculatedFields(); 
+            } else {
+                modalTitle.textContent = 'Tambah Barang Baru';
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                itemDate.value = `${year}-${month}-${day}`;
+                updateCalculatedFields();
+            }
+        }
+
+        function closeModal() {
+            itemModal.style.display = 'none';
+        }
+
+        function calculateAndDisplayTotals(data) {
+            let totalInitialUnit = 0;
+            let totalInitialRp = 0;
+            let totalNewReceiptU = 0;
+            let totalNewReceiptRp = 0;
+            let totalExpenditureU = 0;
+            let totalExpenditureRp = 0;
+            let totalFinalUnit = 0;
+            let totalFinalRp = 0;
+
+            const consolidatedTotals = new Map();
+
+            data.forEach(item => {
+                const key = `${item.name || ''}-${item.unit || ''}`; // Handle undefined item.name or item.unit
+                if (!consolidatedTotals.has(key)) {
+                    consolidatedTotals.set(key, {
+                        initialBalanceUnit: 0,
+                        initialBalanceRp: 0,
+                        newReceiptUnit: 0,
+                        newReceiptRp: 0,
+                        expenditureUnit: 0,
+                        expenditureRp: 0,
+                        finalStockUnit: 0,
+                        finalStockRp: 0
+                    });
+                }
+
+                const currentTotals = consolidatedTotals.get(key);
+                currentTotals.initialBalanceUnit += parseInt(item.initialBalanceUnit) || 0;
+                currentTotals.initialBalanceRp += parseFloat(item.initialBalanceRp) || 0;
+                currentTotals.newReceiptUnit += parseInt(item.newReceiptUnit) || 0;     
+                currentTotals.newReceiptRp += parseFloat(item.newReceiptRp) || 0;         
+                currentTotals.expenditureUnit += parseInt(item.expenditureUnit) || 0;
+                currentTotals.expenditureRp += parseFloat(item.expenditureRp) || 0;
+                currentTotals.finalStockUnit += parseInt(item.finalStockUnit) || 0;
+                currentTotals.finalStockRp += parseFloat(item.finalStockRp) || 0;
+
+                consolidatedTotals.set(key, currentTotals);
+            });
+
+            consolidatedTotals.forEach(totals => {
+                totalInitialUnit += totals.initialBalanceUnit;
+                totalInitialRp += totals.initialBalanceRp;
+                totalNewReceiptU += totals.newReceiptUnit;
+                totalNewReceiptRp += totals.newReceiptRp;
+                totalExpenditureU += totals.expenditureUnit;
+                totalExpenditureRp += totals.expenditureRp;
+                totalFinalUnit += totals.finalStockUnit;
+                totalFinalRp += totals.finalStockRp;
+            });
+
+
+            totalTableInitialBalanceUnit.textContent = totalInitialUnit;
+            totalTableInitialBalanceRp.textContent = totalInitialRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            totalTableNewReceiptUnit.textContent = totalNewReceiptU;
+            totalTableNewReceiptRp.textContent = totalNewReceiptRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            totalTableExpenditureUnit.textContent = totalExpenditureU;
+            totalTableExpenditureRp.textContent = totalExpenditureRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            totalTableFinalStockUnit.textContent = totalFinalUnit;
+            totalTableFinalStockRp.textContent = totalFinalRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            totalInfoInitialBalanceUnit.textContent = totalInitialUnit;
+            totalInfoInitialBalanceRp.textContent = `Rp ${totalInitialRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            totalInfoNewReceiptUnit.textContent = totalNewReceiptU;
+            totalInfoNewReceiptRp.textContent = `Rp ${totalNewReceiptRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            totalInfoExpenditureUnit.textContent = totalExpenditureU;
+            totalInfoExpenditureRp.textContent = `Rp ${totalExpenditureRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            totalInfoFinalStockUnit.textContent = totalFinalUnit;
+            totalInfoFinalStockRp.textContent = `Rp ${totalFinalRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+
+        function renderInventoryTable(data) {
+            inventoryTableBody.innerHTML = '';
+            
+            data.forEach((item, index) => {
+                // Ensure item properties are not null/undefined before using .toLowerCase()
+                const itemNameLower = (item.name || '').toLowerCase();
+                const itemCodeLower = (item.code || '').toLowerCase();
+
+                const price = parseFloat(item.price) || 0;
+                const initialUnit = parseInt(item.initialBalanceUnit) || 0;
+                const initialRp = parseFloat(item.initialBalanceRp) || 0;
+                const newReceiptUnitVal = parseInt(item.newReceiptUnit) || 0;
+                const newReceiptRpVal = parseFloat(item.newReceiptRp) || 0;
+                const expenditureUnitVal = parseInt(item.expenditureUnit) || 0;
+                const expenditureRpVal = parseFloat(item.expenditureRp) || 0;
+                const finalUnit = parseInt(item.finalStockUnit) || 0;
+                const finalRp = parseFloat(item.finalStockRp) || 0;
+                const notes = item.notes || '';
+
+                let latestExpenditureDate = '';
+                const relevantRequests = permintaanBarangData.filter(request => {
+                    // Add checks for request properties before using .toLowerCase()
+                    const requestNamaBarangLower = (request.nama_barang || '').toLowerCase();
+                    const requestKodeBarangLower = (request.kode_barang || '').toLowerCase();
+                    
+                    return (requestNamaBarangLower === itemNameLower) || 
+                           (requestKodeBarangLower === itemCodeLower);
+                });
+
+                if (relevantRequests.length > 0) {
+                    relevantRequests.sort((a, b) => new Date(b.tanggal_permintaan) - new Date(a.tanggal_permintaan));
+                    latestExpenditureDate = relevantRequests[0].tanggal_permintaan || ''; // Ensure it's not undefined
+                }
+                
+                // If there's an expenditure date from the current item's data, prioritize it if it's later
+                if (item.expenditureDate && new Date(item.expenditureDate) > new Date(latestExpenditureDate)) {
+                    latestExpenditureDate = item.expenditureDate;
+                }
+
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.code || ''}</td>
+                        <td>${item.name || ''}</td>
+                        <td>${item.unit || ''}</td>
+                        <td>${price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td>${item.date || ''}</td>
+                        <td>${initialUnit}</td>
+                        <td>${initialRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td>${newReceiptUnitVal}</td>
+                        <td>${newReceiptRpVal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td>${expenditureUnitVal}</td>
+                        <td>${expenditureRpVal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td>${latestExpenditureDate}</td>
+                        <td>${finalUnit}</td>
+                        <td>${finalRp.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td>${notes}</td>
+                        <td class="action-buttons">
+                            <button class="edit-button" data-id="${item.id}">Edit</button>
+                            <button class="delete-button" data-id="${item.id}">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+                inventoryTableBody.innerHTML += row;
+            });
+
+            calculateAndDisplayTotals(data);
+        }
+
+        openModalButton.addEventListener('click', () => openModal());
+        closeModalButton.addEventListener('click', closeModal);
+        cancelModalButton.addEventListener('click', closeModal);
+
+        inventoryTableBody.addEventListener('click', function(event) {
+            const target = event.target;
+
+            if (target.classList.contains('edit-button')) {
+                const id = target.dataset.id;
+                const itemToEdit = inventoryData.find(item => item.id === id);
+                if (itemToEdit) {
+                    openModal(itemToEdit);
+                } else {
+                    console.error("Item not found for editing:", id);
+                    alert("Terjadi kesalahan: Barang tidak ditemukan.");
+                }
+            } 
+            else if (target.classList.contains('delete-button')) {
+                const id = target.dataset.id;
+                if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
+                    inventoryData = inventoryData.filter(item => item.id !== id);
+                    localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                    renderInventoryTable(inventoryData);
+                }
+            }
+        });
+
+        itemForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                id: itemId.value || Date.now().toString(),
+                code: itemCode.value.trim(),
+                name: itemName.value,
+                type: itemType.value,
+                unit: itemUnit.value, 
+                price: parseFloat(itemPrice.value) || 0,
+                date: itemDate.value,
+                initialBalanceUnit: parseInt(initialBalanceUnit.value) || 0,
+                initialBalanceRp: parseFloat(initialBalanceRp.value) || 0,
+                newReceiptUnit: parseInt(newReceiptUnit.value) || 0,
+                newReceiptRp: parseFloat(newReceiptRp.value) || 0,
+                expenditureUnit: parseInt(expenditureUnit.value) || 0,
+                expenditureRp: parseFloat(expenditureRp.value) || 0,
+                expenditureDate: expenditureDateInput.value,
+                finalStockUnit: parseInt(finalStockUnit.value) || 0,
+                finalStockRp: parseFloat(finalStockRp.value) || 0,
+                notes: itemNotes.value || ''
+            };
+
+            const isDuplicateCode = inventoryData.some(item => {
+                if (formData.id && item.id === formData.id) {
+                    return false;
+                }
+                return (item.code || '').toLowerCase() === formData.code.toLowerCase(); // Handle undefined item.code
+            });
+
+            if (isDuplicateCode) {
+                alert('Kode Barang sudah ada. Harap gunakan kode yang berbeda.');
+                return;
+            }
+            
+            if (itemId.value) {
+                inventoryData = inventoryData.map(item => 
+                    item.id === formData.id ? formData : item
+                );
+            } else {
+                inventoryData.push(formData);
+            }
+            
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            renderInventoryTable(inventoryData);
+            closeModal();
+        });
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedMonth = monthFilter.value;
+
+            const filteredData = inventoryData.filter(item => {
+                // Add checks for item properties before using .toLowerCase()
+                const matchesSearch = ((item.name || '').toLowerCase().includes(searchTerm) || 
+                                      (item.code || '').toLowerCase().includes(searchTerm) ||
+                                      (item.notes || '').toLowerCase().includes(searchTerm));
+                
+                let matchesMonth = true;
+                if (selectedMonth) {
+                    const itemMonth = item.date ? item.date.substring(5, 7) : '';
+                    matchesMonth = (itemMonth === selectedMonth);
+                }
+
+                return matchesSearch && matchesMonth;
+            });
+            renderInventoryTable(filteredData);
+        }
+
+        searchInput.addEventListener('input', performSearch); 
+        searchButton.addEventListener('click', performSearch); 
+        monthFilter.addEventListener('change', performSearch);
+
+        // Function to update the notification badge
+        function updateNotificationBadge() {
+            // Filter requests that are 'Menunggu', 'Menunggu Diskusi Pihak Inventaris' or 'Menunggu Diskusi Pihak Peminta'
+            const pendingRequests = permintaanBarangData.filter(req => 
+                req.status === 'Menunggu' || 
+                req.status === 'Menunggu Diskusi Pihak Inventaris' || 
+                req.status === 'Menunggu Diskusi Pihak Peminta'
+            );
+            
+            if (pendingRequests.length > 0) {
+                notificationBadge.textContent = pendingRequests.length;
+                notificationBadge.style.display = 'inline-block'; // Show the badge
+            } else {
+                notificationBadge.style.display = 'none'; // Hide the badge if no pending requests
+            }
+        }
+
+        // Initial render and notification badge update when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            renderInventoryTable(inventoryData);
+            updateNotificationBadge(); // Update badge on load
+        });
+        
+        const profileMenu = document.getElementById('profileMenu');
+        if (profileMenu) {
+            profileMenu.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.profile-menu') && !event.target.closest('.profile-menu')) {
+                    if (profileMenu.classList.contains('active')) {
+                        profileMenu.classList.remove('active');
+                    }
+                }
+            });
+        }
+		
+    </script>
+</body>
+</html>

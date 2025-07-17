@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Permintaan Barang (Perlu Persetujuan) - DISPORA Kota Tangerang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #004aad;
+            --secondary: #f8f9fa;
+            --accent: #ff6b00;
+            --text: #333;
+            --light: #fff;
+            --dark-overlay: rgba(0,0,0,0.5); /* Added for modal overlay */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: var(--light);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo img {
+            height: 50px;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--accent);
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+        .profile-menu img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light);
+        }
+        .profile-menu button {
+            background-color: transparent;
+            border: none;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-menu .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--light);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .profile-menu .dropdown-content a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .profile-menu .dropdown-content a:hover {
+            background-color: var(--secondary);
+        }
+
+        .profile-menu.active .dropdown-content {
+            display: block;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 20px auto;
+            background-color: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .inventory-table th, .inventory-table td {
+            border: 1px solid black;
+            padding: 0.8rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .inventory-table th {
+            background-color: var(--primary);
+            color: var(--light);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .inventory-table thead th {
+            text-align: center;
+        }
+
+        .inventory-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .action-buttons button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Removed the specific .action-buttons prefix for approve/reject buttons here */
+        /* These styles are now more general, so they will apply to any button with these classes */
+        .approve-button {
+            background-color: var(--primary); /* Blue */
+            color: var(--light); /* Ensure text is white */
+            border: none;
+            padding: 0.75rem 1.5rem; /* Standard padding for modal buttons */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .approve-button:hover {
+            background-color: #003a80; /* Darker blue on hover */
+        }
+        .reject-button {
+            background-color: #dc3545; /* Red */
+            color: var(--light); /* Ensure text is white */
+            border: none;
+            padding: 0.75rem 1.5rem; /* Standard padding for modal buttons */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .reject-button:hover {
+            background-color: #c82333; /* Darker red on hover */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: var(--dark-overlay); /* Black w/ opacity */
+            justify-content: center; /* Use flex properties only when displayed */
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--light);
+            margin: auto;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 90vh; /* Added to make content scrollable if too long */
+            overflow-y: auto; /* Added for scrollable content */
+        }
+
+        .modal-large .modal-content { /* For request approval modal and notification modal */
+            max-width: 800px; /* Wider for more columns */
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group .documentation-input-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            /* These general modal button styles are now less specific than .approve-button and .reject-button */
+            /* So, the specific color rules will override these. */
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            /* No background-color here, let .approve-button and .reject-button define it */
+        }
+
+        .modal-buttons button.save-button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons button.save-button:hover {
+            background-color: #003a80;
+        }
+
+        .modal-buttons button.cancel-button {
+            background-color: #6c757d;
+            color: var(--light);
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons button.cancel-button:hover {
+            background-color: #5a6268;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .request-table .status-menunggu { color: orange; font-weight: bold; }
+        .request-table .status-disetujui { color: green; font-weight: bold; }
+        .request-table .status-ditolak { color: red; font-weight: bold; }
+        .request-table .status-menunggudiskusipihakinventaris { color: #8a2be2; font-weight: bold; } /* Purple */
+        .request-table .status-menunggudiskusipihakpeminta { color: #00bcd4; font-weight: bold; } /* Cyan */
+
+        /* Discussion Log Styles */
+        .discussion-log {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: #fcfcfc;
+            margin-bottom: 1rem;
+        }
+        .discussion-log-item {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed #eee;
+        }
+        .discussion-log-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .discussion-log-item strong {
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+        .discussion-log-item span.timestamp {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: 0.5rem;
+        }
+        .discussion-log-item p {
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+            padding-left: 0.5rem;
+        }
+
+        /* Notification Badge Styles */
+        .notification-badge {
+            background-color: var(--accent); /* Orange color for notification */
+            color: var(--light);
+            border-radius: 50%;
+            padding: 2px 7px; /* Adjust padding to control size */
+            font-size: 0.7em;
+            position: absolute; /* Position relative to its parent <a> */
+            top: 5px; /* Adjust top and right to fine-tune position */
+            right: 5px;
+            transform: translate(50%, -50%); /* Center the badge */
+            min-width: 20px; /* Ensure it's wide enough for a single digit */
+            text-align: center;
+            line-height: 1.2;
+            display: none; /* Hidden by default, show only when there are notifications */
+        }
+
+        /* To ensure proper positioning of the badge */
+        nav ul li a {
+            position: relative;
+            padding-right: 25px; /* Add some padding to the right to make space for the badge */
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            main {
+                padding: 1rem;
+            }
+            .inventory-table th, .inventory-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .modal-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo DISPORA">
+            <div class="logo-text">
+                <h1>DISPORA KOTA TANGERANG</h1>
+                <p>Sistem Inventaris Barang Pakai Habis</p>
+            </div>
+        </div>
+        <nav>
+            <ul>
+<<<<<<< HEAD
+                <li><a href="beranda.html">Input Barang</a></li>
+                <li><a href="barangmasuk1.html">Barang Masuk</a></li>
+                <li><a href="inventaris.html">Permintaan Barang</a></li>
+                <li>
+                    <a href="pengaturan.html" class="active">
+                        Daftar Permintaan 
+                        <span id="notificationBadge" class="notification-badge"></span>
+                    </a>
+                </li>
+                <li><a href="laporan.html">Cetak Laporan</a></li>
+=======
+                <li><a href="index.html">Beranda</a></li>
+		<li><a href="barangmasuk1.html">Barang Masuk</a></li>
+                <li><a href="inventaris.html">Inventaris</a></li>
+                <li><a href="laporan.html" class="active">Laporan</a></li>
+                <li><a href="pengaturan.html">Pengaturan</a></li>
+>>>>>>> 934faa44a913cbd42243c32f005e139aa51a1cf1
+            </ul>
+        </nav>
+        <div class="profile-menu" id="profileMenu">
+            <button>
+                <img src="logo.png" alt="Logo DISPORA"> Admin
+            </button>
+            <div class="dropdown-content">
+                <a href="profile.html">Profil</a>
+                <a href="settings.html">Pengaturan</a>
+                <a href="index.html">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>Daftar Permintaan Barang (Perlu Persetujuan)</h2>
+        <div style="overflow-x: auto;">
+            <table class="inventory-table request-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Kode Barang</th>
+                        <th>Nama Barang</th>
+                        <th>Jumlah Diminta</th>
+                        <th>Tanggal Permintaan</th>
+                        <th>Bidang</th>
+                        <th>Status</th>
+                        <th>Catatan Bendahara</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="requestTableBody">
+                    </tbody>
+            </table>
+            <p id="noPendingRequestsMessage" style="text-align: center; margin-top: 1rem; display: none;">Tidak ada permintaan barang yang perlu persetujuan.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 DISPORA Kota Tangerang. All Rights Reserved.</p>
+    </footer>
+
+    <div id="requestApprovalModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close-button" id="closeRequestApprovalModal">&times;</span>
+            <h3>Detail Permintaan Barang</h3>
+            <div id="requestDetailContent">
+                <p><strong>Kode Barang:</strong> <span id="detailKode"></span></p>
+                <p><strong>Nama Barang:</strong> <span id="detailNama"></span></p>
+                <p><strong>Jumlah Diminta:</strong> <span id="detailJumlahDiminta"></span></p>
+                <p><strong>Stok Tersedia:</strong> <span id="detailStokTersedia"></span></p>
+                <p><strong>Tanggal Permintaan:</strong> <span id="detailTanggalPermintaan"></span></p>
+                <p><strong>Bidang:</strong> <span id="detailBidang"></span></p>
+                <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+            </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <h3>Riwayat Diskusi</h3>
+            <div class="discussion-log" id="approvalDiscussionLogContainer">
+                <p style="text-align: center; color: #888;">Belum ada diskusi.</p>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label for="newApprovalDiscussionMessage">Tambahkan Balasan/Pesan</label>
+                <textarea id="newApprovalDiscussionMessage" placeholder="Ketik balasan Anda di sini..."></textarea>
+            </div>
+            <button type="button" class="approve-button" id="sendApprovalDiscussionMessageButton">Kirim Balasan</button>
+            
+            <hr style="margin: 1.5rem 0;">
+
+            <div class="form-group">
+                <label for="bendaharaNotes">Catatan Bendahara (Opsional)</label>
+                <textarea id="bendaharaNotes" placeholder="Tambahkan catatan persetujuan atau penolakan"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="approvedQuantity">Jumlah Disetujui</label>
+                <input type="number" id="approvedQuantity" min="0" required>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="approve-button" id="approveRequestButton">Setujui</button>
+                <button type="button" class="reject-button" id="rejectRequestButton">Tolak</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let inventoryData = JSON.parse(localStorage.getItem('inventoryDataBarangMasuk')) || [];
+        let permintaanBarangData = JSON.parse(localStorage.getItem('permintaanBarangData')) || [];
+        let currentRequest = null; // To store the request being approved/rejected or discussed
+
+        const requestTableBody = document.getElementById('requestTableBody');
+        const noPendingRequestsMessage = document.getElementById('noPendingRequestsMessage');
+        const notificationBadge = document.getElementById('notificationBadge'); // Added for notification badge
+
+        // Request Approval Modal elements
+        const requestApprovalModal = document.getElementById('requestApprovalModal');
+        const closeRequestApprovalModalBtn = document.getElementById('closeRequestApprovalModal');
+        const detailKode = document.getElementById('detailKode');
+        const detailNama = document = document.getElementById('detailNama');
+        const detailJumlahDiminta = document.getElementById('detailJumlahDiminta');
+        const detailStokTersedia = document.getElementById('detailStokTersedia');
+        const detailTanggalPermintaan = document.getElementById('detailTanggalPermintaan');
+        const detailBidang = document.getElementById('detailBidang');
+        const detailStatus = document.getElementById('detailStatus');
+        const bendaharaNotesInput = document.getElementById('bendaharaNotes');
+        const approvedQuantityInput = document.getElementById('approvedQuantity');
+        const approveRequestButton = document.getElementById('approveRequestButton');
+        const rejectRequestButton = document.getElementById('rejectRequestButton');
+
+        // Discussion elements for Approval Modal
+        const approvalDiscussionLogContainer = document.getElementById('approvalDiscussionLogContainer');
+        const newApprovalDiscussionMessageInput = document.getElementById('newApprovalDiscussionMessage');
+        const sendApprovalDiscussionMessageButton = document.getElementById('sendApprovalDiscussionMessageButton');
+
+        function renderRequestsTable() {
+            requestTableBody.innerHTML = '';
+            // Filter requests that are 'Menunggu', 'Menunggu Diskusi Pihak Inventaris' or 'Menunggu Diskusi Pihak Peminta'
+            const pendingRequests = permintaanBarangData.filter(req => 
+                req.status === 'Menunggu' || 
+                req.status === 'Menunggu Diskusi Pihak Inventaris' || 
+                req.status === 'Menunggu Diskusi Pihak Peminta'
+            );
+            
+            // Update notification badge
+            if (pendingRequests.length > 0) {
+                notificationBadge.textContent = pendingRequests.length;
+                notificationBadge.style.display = 'inline-block'; // Show the badge
+            } else {
+                notificationBadge.style.display = 'none'; // Hide the badge if no pending requests
+            }
+
+            if (pendingRequests.length === 0) {
+                noPendingRequestsMessage.style.display = 'block';
+            } else {
+                noPendingRequestsMessage.style.display = 'none';
+                pendingRequests.forEach((req, index) => {
+                    const statusClass = `status-${req.status.toLowerCase().replace(/\s/g, '')}`;
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${req.kode}</td>
+                            <td>${req.nama_barang}</td>
+                            <td>${req.jumlah_diminta}</td>
+                            <td>${req.tanggal_permintaan}</td>
+                            <td>${req.bidang}</td>
+                            <td class="${statusClass}">${req.status}</td>
+                            <td>${req.catatan_bendahara || '-'}</td>
+                            <td class="action-buttons">
+                                <button class="approve-button" data-id="${req.id}">Tinjau</button>
+                            </td>
+                        </tr>
+                    `;
+                    requestTableBody.innerHTML += row;
+                });
+            }
+
+            document.querySelectorAll('#requestTableBody .approve-button').forEach(button => {
+                button.addEventListener('click', (e) => openRequestApprovalModal(e.target.dataset.id));
+            });
+        }
+
+        function openRequestApprovalModal(id) {
+            currentRequest = permintaanBarangData.find(req => req.id === id);
+            if (currentRequest) {
+                const correspondingInventoryItem = inventoryData.find(item => item.code === currentRequest.kode);
+                const stockAvailable = correspondingInventoryItem ? correspondingInventoryItem.quantity : 0;
+
+                detailKode.textContent = currentRequest.kode;
+                detailNama.textContent = currentRequest.nama_barang;
+                detailJumlahDiminta.textContent = currentRequest.jumlah_diminta;
+                detailStokTersedia.textContent = stockAvailable;
+                detailTanggalPermintaan.textContent = currentRequest.tanggal_permintaan;
+                detailBidang.textContent = currentRequest.bidang;
+                detailStatus.textContent = currentRequest.status;
+
+                bendaharaNotesInput.value = currentRequest.catatan_bendahara || '';
+                approvedQuantityInput.value = currentRequest.jumlah_disetujui !== null ? currentRequest.jumlah_disetujui : currentRequest.jumlah_diminta;
+                approvedQuantityInput.max = stockAvailable;
+
+                renderApprovalDiscussionLog(currentRequest.discussionLog);
+                newApprovalDiscussionMessageInput.value = '';
+
+                requestApprovalModal.style.display = 'flex';
+            }
+        }
+
+        function closeRequestApprovalModal() {
+            requestApprovalModal.style.display = 'none';
+            currentRequest = null;
+        }
+
+        function renderApprovalDiscussionLog(log) {
+            approvalDiscussionLogContainer.innerHTML = '';
+            if (log && log.length > 0) {
+                log.forEach(entry => {
+                    const date = new Date(entry.timestamp);
+                    const formattedTimestamp = date.toLocaleString('id-ID', {
+                        year: 'numeric', month: 'long', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit'
+                    });
+                    const logItem = `
+                        <div class="discussion-log-item">
+                            <strong>${entry.sender}</strong> <span class="timestamp">(${formattedTimestamp})</span>
+                            <p>${entry.message}</p>
+                        </div>
+                    `;
+                    approvalDiscussionLogContainer.innerHTML += logItem;
+                });
+                approvalDiscussionLogContainer.scrollTop = approvalDiscussionLogContainer.scrollHeight;
+            } else {
+                approvalDiscussionLogContainer.innerHTML = '<p style="text-align: center; color: #888;">Belum ada diskusi.</p>';
+            }
+        }
+
+        sendApprovalDiscussionMessageButton.addEventListener('click', () => {
+            const message = newApprovalDiscussionMessageInput.value.trim();
+            if (!message || !currentRequest) {
+                alert('Pesan tidak boleh kosong.');
+                return;
+            }
+
+            if (!currentRequest.discussionLog) {
+                currentRequest.discussionLog = [];
+            }
+            const senderRole = "Inventaris";
+            currentRequest.discussionLog.push({
+                timestamp: new Date().toISOString(),
+                sender: senderRole,
+                message: message
+            });
+
+            currentRequest.status = 'Menunggu Diskusi Pihak Peminta';
+            
+            localStorage.setItem('permintaanBarangData', JSON.stringify(permintaanBarangData));
+            renderApprovalDiscussionLog(currentRequest.discussionLog);
+            newApprovalDiscussionMessageInput.value = '';
+            renderRequestsTable(); // Re-render table to reflect status change
+            alert('Balasan berhasil dikirim!');
+            detailStatus.textContent = currentRequest.status;
+        });
+
+        approveRequestButton.addEventListener('click', () => {
+            if (!currentRequest) return;
+
+            const approvedQuantity = parseInt(approvedQuantityInput.value);
+            const bendaharaNotes = bendaharaNotesInput.value.trim();
+            const correspondingInventoryItem = inventoryData.find(item => item.code === currentRequest.kode);
+
+            if (isNaN(approvedQuantity) || approvedQuantity < 0) {
+                alert('Jumlah Disetujui harus angka positif.');
+                return;
+            }
+
+            if (approvedQuantity > (correspondingInventoryItem ? correspondingInventoryItem.quantity : 0)) {
+                alert('Jumlah yang disetujui tidak boleh melebihi stok yang tersedia.');
+                return;
+            }
+
+            permintaanBarangData = permintaanBarangData.map(req => {
+                if (req.id === currentRequest.id) {
+                    req.catatan_bendahara = bendaharaNotes || (approvedQuantity > 0 ? 'Permintaan disetujui.' : 'Permintaan ditolak (jumlah 0 disetujui).');
+                    req.jumlah_disetujui = approvedQuantity;
+                    req.status = (approvedQuantity > 0) ? 'Disetujui' : 'Ditolak';
+                }
+                return req;
+            });
+            
+            if (approvedQuantity > 0 && correspondingInventoryItem) {
+                correspondingInventoryItem.quantity -= approvedQuantity;
+            }
+            
+            localStorage.setItem('inventoryDataBarangMasuk', JSON.stringify(inventoryData));
+            localStorage.setItem('permintaanBarangData', JSON.stringify(permintaanBarangData));
+            
+            alert(`Permintaan berhasil ${approvedQuantity > 0 ? 'disetujui' : 'ditolak'}!`);
+            
+            renderRequestsTable();
+            closeRequestApprovalModal();
+        });
+
+        rejectRequestButton.addEventListener('click', () => {
+            if (!currentRequest) return;
+
+            if (confirm('Apakah Anda yakin ingin menolak permintaan ini?')) {
+                permintaanBarangData = permintaanBarangData.map(req => {
+                    if (req.id === currentRequest.id) {
+                        req.status = 'Ditolak';
+                        req.catatan_bendahara = bendaharaNotesInput.value.trim() || 'Permintaan ditolak oleh Bendahara.';
+                        req.jumlah_disetujui = 0;
+                    }
+                    return req;
+                });
+                localStorage.setItem('permintaanBarangData', JSON.stringify(permintaanBarangData));
+                
+                renderRequestsTable();
+                alert('Permintaan berhasil ditolak!');
+                closeRequestApprovalModal();
+            }
+        });
+
+        // Event Listeners for Modals
+        closeRequestApprovalModalBtn.addEventListener('click', closeRequestApprovalModal);
+
+        requestApprovalModal.addEventListener('click', (e) => {
+            if (e.target === requestApprovalModal) {
+                closeRequestApprovalModal();
+            }
+        });
+
+        // Profile Menu Dropdown functionality
+        const profileMenu = document.getElementById('profileMenu');
+        if (profileMenu) {
+            profileMenu.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.profile-menu') && !event.target.closest('.profile-menu')) {
+                    if (profileMenu.classList.contains('active')) {
+                        profileMenu.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Initial render when page loads
+        document.addEventListener('DOMContentLoaded', renderRequestsTable);
+		
+    </script>
+</body>
+</html>

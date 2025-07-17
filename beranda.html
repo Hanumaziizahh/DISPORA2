@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Inventaris Barang Pakai Habis - DISPORA Kota Tangerang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #004aad;
+            --secondary: #f8f9fa;
+            --accent: #ff6b00;
+            --text: #333;
+            --light: #fff;
+            --dark-overlay: rgba(0,0,0,0.5); /* Added for modal overlay */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: var(--light);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo img {
+            height: 50px;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+        .profile-menu img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light);
+        }
+        .profile-menu button {
+            background-color: transparent;
+            border: none;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-menu .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--light);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .profile-menu .dropdown-content a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .profile-menu .dropdown-content a:hover {
+            background-color: var(--secondary);
+        }
+
+        .profile-menu.active .dropdown-content {
+            display: block;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 20px auto;
+            background-color: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Info Boxes styles */
+        .info-boxes {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .info-box {
+            background-color: var(--secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .info-box h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+
+        .info-box p {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 250px;
+        }
+
+        .search-bar input {
+            border: none;
+            padding: 0.75rem;
+            flex-grow: 1;
+            font-size: 1rem;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+        }
+
+        .search-bar button {
+            background-color: #f0f0f0;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            color: var(--text);
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .action-buttons-group { /* New group for buttons */
+            display: flex;
+            gap: 1rem; /* Space between buttons */
+            flex-wrap: wrap;
+        }
+
+        button.add-button,
+        .import-button,
+        .import-image-button {
+            background-color: var(--accent);
+            color: var(--light);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            position: relative; /* For badge positioning */
+        }
+
+        button.add-button:hover,
+        .import-button:hover,
+        .import-image-button:hover {
+            background-color: #e65c00;
+        }
+
+        /* Notification Badge Styles */
+        .notification-badge {
+            background-color: var(--accent); /* Orange color for notification */
+            color: var(--light);
+            border-radius: 50%;
+            padding: 2px 7px; /* Adjust padding to control size */
+            font-size: 0.7em;
+            position: absolute; /* Position relative to its parent <a> */
+            top: 5px; /* Adjust top and right to fine-tune position */
+            right: 5px;
+            transform: translate(50%, -50%); /* Center the badge */
+            min-width: 20px; /* Ensure it's wide enough for a single digit */
+            text-align: center;
+            line-height: 1.2;
+            display: none; /* Hidden by default, show only when there are notifications */
+        }
+        
+        /* To ensure proper positioning of the badge */
+        nav ul li a {
+            position: relative;
+            padding-right: 25px; /* Add some padding to the right to make space for the badge */
+        }
+        
+        /* Style for the hidden file input */
+        .hidden-file-input {
+            display: none;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .inventory-table th, .inventory-table td {
+            border: 1px solid black;
+            padding: 0.8rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .inventory-table th {
+            background-color: var(--primary);
+            color: var(--light);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .inventory-table thead th {
+            text-align: center;
+        }
+
+        .inventory-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .inventory-table tfoot {
+            font-weight: bold;
+            background-color: #e9e9e9;
+        }
+        .inventory-table tfoot td {
+            border-top: 2px solid var(--primary);
+        }
+
+        .inventory-table tfoot td[id$="Unit"],
+        .inventory-table tfoot td[id$="Rp"] {
+            text-align: right;
+        }
+
+        .inventory-table tfoot td:first-child {
+            text-align: right;
+        }
+
+
+        .action-buttons button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-buttons button.edit-button:hover {
+            background-color: #003a80;
+        }
+
+        .action-buttons button.delete-button {
+            background-color: #dc3545;
+        }
+
+        .action-buttons button.delete-button:hover {
+            background-color: #c82333;
+        }
+        
+        .action-buttons button.approve-button {
+            background-color: #28a745;
+        }
+        .action-buttons button.approve-button:hover {
+            background-color: #218838;
+        }
+        .action-buttons button.reject-button {
+            background-color: #dc3545;
+        }
+        .action-buttons button.reject-button:hover {
+            background-color: #c82333;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: var(--dark-overlay); /* Black w/ opacity */
+            justify-content: center; /* Use flex properties only when displayed */
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--light);
+            margin: auto;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 90vh; /* Added to make content scrollable if too long */
+            overflow-y: auto; /* Added for scrollable content */
+        }
+
+        .modal-large .modal-content { /* For request approval modal and notification modal */
+            max-width: 800px; /* Wider for more columns */
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group .documentation-input-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .documentation-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .documentation-input-group input[type="text"] {
+            flex-grow: 1;
+        }
+        .documentation-input-group button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .documentation-input-group button:hover {
+            background-color: #003a80;
+        }
+
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .modal-buttons button.save-button {
+            background-color: var(--primary);
+            color: var(--light);
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons button.save-button:hover {
+            background-color: #003a80;
+        }
+
+        .modal-buttons button.cancel-button {
+            background-color: #6c757d;
+            color: var(--light);
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons button.cancel-button:hover {
+            background-color: #5a6268;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .inventory-table .documentation-img {
+            max-width: 100px;
+            max-height: 80px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        .request-table .status-menunggu { color: orange; font-weight: bold; }
+        .request-table .status-disetujui { color: green; font-weight: bold; }
+        .request-table .status-ditolak { color: red; font-weight: bold; }
+        /* New statuses for discussion */
+        .request-table .status-menunggudiskusipihakinventaris { color: #8a2be2; font-weight: bold; } /* Purple */
+        .request-table .status-menunggudiskusipihakpeminta { color: #00bcd4; font-weight: bold; } /* Cyan */
+
+
+        /* Discussion Log Styles (copied from inventaris.html, with slight adjustments if needed) */
+        .discussion-log {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: #fcfcfc;
+            margin-bottom: 1rem;
+        }
+        .discussion-log-item {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed #eee;
+        }
+        .discussion-log-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .discussion-log-item strong {
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+        .discussion-log-item span.timestamp {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: 0.5rem;
+        }
+        .discussion-log-item p {
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+            padding-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-bar {
+                width: 100%;
+            }
+            .action-buttons-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            button.add-button, .import-button, .import-image-button {
+                width: 100%;
+            }
+            .info-boxes {
+                justify-content: flex-start;
+            }
+            .info-box {
+                width: 120px;
+                padding: 0.8rem;
+            }
+            .info-box h3 {
+                font-size: 0.9rem;
+            }
+            .info-box p {
+                font-size: 1.2rem;
+            }
+            .inventory-table th, .inventory-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .modal-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo DISPORA">
+            <div class="logo-text">
+                <h1>DISPORA KOTA TANGERANG</h1>
+                <p>Sistem Inventaris Barang Pakai Habis</p>
+            </div>
+        </div>
+        <nav>
+            <ul>
+<<<<<<< HEAD
+                <li><a href="beranda.html">Input Barang</a></li>
+=======
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="inputbarang.html">Input Barang</a></li>
+>>>>>>> 934faa44a913cbd42243c32f005e139aa51a1cf1
+                <li><a href="barangmasuk1.html">Barang Masuk</a></li>
+                <li><a href="inventaris.html">Permintaan Barang</a></li>
+                <li>
+                    <a href="pengaturan.html" class="active" style="position: relative;">
+                        Daftar Permintaan 
+                        <span id="notificationBadgeBeranda" class="notification-badge"></span>
+                    </a>
+                </li>
+                <li><a href="laporan.html">Cetak Laporan</a></li>
+            </ul>
+        </nav>
+        <div class="profile-menu" id="profileMenu">
+            <button>
+                <img src="logo.png" alt="Logo DISPORA"> Admin
+            </button>
+            <div class="dropdown-content">
+                <a href="profile.html">Profil</a>
+                <a href="settings.html">Pengaturan</a>
+                <a href="index.html">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>Daftar Barang Masuk / Stok Inventaris</h2>
+        <div class="controls">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Cari Kode/Nama Barang/Keterangan...">
+                <button type="button" id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="action-buttons-group">
+                <button class="add-button" id="openModal">Tambah Barang</button>
+            </div>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Kode Barang</th>
+                        <th>Nama Barang / Spesifikasi Barang</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal Masuk Barang</th>
+                        <th>Dokumentasi Barang</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: left;">Total Keseluruhan:</td>
+                        <td id="totalQuantity">0</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        </main>
+
+    <footer>
+        <p>&copy; 2024 DISPORA Kota Tangerang. All Rights Reserved.</p>
+    </footer>
+
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <h3 id="modalTitle">Tambah Barang Baru</h3>
+            <form id="itemForm">
+                <div class="form-group">
+                    <label for="itemCode">Kode Barang</label>
+                    <input type="text" id="itemCode" placeholder="Masukkan Kode Barang" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Nama Barang / Spesifikasi Barang</label>
+                    <input type="text" id="itemName" placeholder="Masukkan Nama Barang" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemQuantity">Jumlah</label>
+                    <input type="number" id="itemQuantity" placeholder="Masukkan Jumlah" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemDate">Tanggal Masuk Barang</label>
+                    <input type="date" id="itemDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemDocumentation">Dokumentasi Barang (Link Gambar/Base64)</label>
+                    <div class="documentation-input-group">
+                        <input type="text" id="itemDocumentation" placeholder="URL Gambar atau Base64" readonly>
+                        <input type="file" id="modalImageInput" class="hidden-file-input" accept="image/*">
+                        <button type="button" id="uploadImageButton">Upload Gambar</button>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="save-button" id="saveItemButton">Simpan</button>
+                    <button type="button" class="cancel-button" id="cancelButton">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="requestApprovalModal" class="modal">
+        <div class="modal-content modal-large"> <span class="close-button" id="closeRequestApprovalModal">&times;</span>
+            <h3>Detail Permintaan Barang</h3>
+            <div id="requestDetailContent">
+                <p><strong>Kode Barang:</strong> <span id="detailKode"></span></p>
+                <p><strong>Nama Barang:</strong> <span id="detailNama"></span></p>
+                <p><strong>Jumlah Diminta:</strong> <span id="detailJumlahDiminta"></span></p>
+                <p><strong>Stok Tersedia:</strong> <span id="detailStokTersedia"></span></p>
+                <p><strong>Tanggal Permintaan:</strong> <span id="detailTanggalPermintaan"></span></p>
+                <p><strong>Bidang:</strong> <span id="detailBidang"></span></p>
+                <p><strong>Status:</strong> <span id="detailStatus"></span></p> </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <h3>Riwayat Diskusi</h3>
+            <div class="discussion-log" id="approvalDiscussionLogContainer">
+                <p style="text-align: center; color: #888;">Belum ada diskusi.</p>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label for="newApprovalDiscussionMessage">Tambahkan Balasan/Pesan</label>
+                <textarea id="newApprovalDiscussionMessage" placeholder="Ketik balasan Anda di sini..."></textarea>
+            </div>
+            <button type="button" class="approve-button" id="sendApprovalDiscussionMessageButton">Kirim Balasan</button>
+            
+            <hr style="margin: 1.5rem 0;">
+
+            <div class="form-group">
+                <label for="bendaharaNotes">Catatan Bendahara (Opsional)</label>
+                <textarea id="bendaharaNotes" placeholder="Tambahkan catatan persetujuan atau penolakan"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="approvedQuantity">Jumlah Disetujui</label>
+                <input type="number" id="approvedQuantity" min="0" required>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="approve-button" id="approveRequestButton">Setujui</button>
+                <button type="button" class="reject-button" id="rejectRequestButton">Tolak</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const itemModal = document.getElementById('itemModal');
+        const itemForm = document.getElementById('itemForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const itemCode = document.getElementById('itemCode');
+        const itemName = document.getElementById('itemName');
+        const itemQuantity = document.getElementById('itemQuantity');
+        const itemDate = document.getElementById('itemDate');
+        const itemDocumentation = document.getElementById('itemDocumentation');
+        const saveItemButton = document.getElementById('saveItemButton');
+        const cancelButton = document.getElementById('cancelButton');
+        const inventoryTableBody = document.getElementById('inventoryTableBody');
+        const totalQuantityCell = document.getElementById('totalQuantity');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const uploadImageButton = document.getElementById('uploadImageButton');
+        const modalImageInput = document.getElementById('modalImageInput');
+
+        // Request Approval Modal elements
+        const requestApprovalModal = document.getElementById('requestApprovalModal');
+        const closeRequestApprovalModalBtn = document.getElementById('closeRequestApprovalModal');
+        const detailKode = document.getElementById('detailKode');
+        const detailNama = document.getElementById('detailNama');
+        const detailJumlahDiminta = document.getElementById('detailJumlahDiminta');
+        const detailStokTersedia = document.getElementById('detailStokTersedia');
+        const detailTanggalPermintaan = document.getElementById('detailTanggalPermintaan');
+        const detailBidang = document.getElementById('detailBidang');
+        const detailStatus = document.getElementById('detailStatus'); // Added
+        const bendaharaNotesInput = document.getElementById('bendaharaNotes');
+        const approvedQuantityInput = document.getElementById('approvedQuantity');
+        const approveRequestButton = document.getElementById('approveRequestButton');
+        const rejectRequestButton = document.getElementById('rejectRequestButton');
+
+        // New Discussion elements for Approval Modal
+        const approvalDiscussionLogContainer = document.getElementById('approvalDiscussionLogContainer');
+        const newApprovalDiscussionMessageInput = document.getElementById('newApprovalDiscussionMessage');
+        const sendApprovalDiscussionMessageButton = document.getElementById('sendApprovalDiscussionMessageButton');
+
+        // Notification Badge element for Beranda
+        const notificationBadgeBeranda = document.getElementById('notificationBadgeBeranda');
+
+        let inventoryData = JSON.parse(localStorage.getItem('inventoryDataBarangMasuk')) || [];
+        let permintaanBarangData = JSON.parse(localStorage.getItem('permintaanBarangData')) || [];
+        let currentEditingItemId = null;
+        let currentRequest = null; // To store the request being approved/rejected or discussed
+
+        function renderInventoryTable(data) {
+            inventoryTableBody.innerHTML = '';
+            let totalQuantity = 0;
+            data.forEach((item, index) => {
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.code}</td>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.date}</td>
+                        <td>
+                            ${item.documentation ? `<img src="${item.documentation}" alt="Dokumentasi" class="documentation-img">` : 'N/A'}
+                        </td>
+                        <td class="action-buttons">
+                            <button class="edit-button" data-id="${item.id}">Edit</button>
+                            <button class="delete-button" data-id="${item.id}">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+                inventoryTableBody.innerHTML += row;
+                totalQuantity += parseInt(item.quantity);
+            });
+            totalQuantityCell.textContent = totalQuantity;
+
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', (e) => openEditModal(e.target.dataset.id));
+            });
+
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', (e) => deleteItem(e.target.dataset.id));
+            });
+        }
+
+        function openAddModal() {
+            itemForm.reset();
+            modalTitle.textContent = 'Tambah Barang Baru';
+            currentEditingItemId = null;
+            itemDocumentation.value = '';
+            itemModal.style.display = 'flex';
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            itemDate.value = `${year}-${month}-${day}`;
+        }
+
+        function openEditModal(id) {
+            const item = inventoryData.find(i => i.id === id);
+            if (item) {
+                modalTitle.textContent = 'Edit Barang';
+                itemCode.value = item.code;
+                itemName.value = item.name;
+                itemQuantity.value = item.quantity;
+                itemDate.value = item.date;
+                itemDocumentation.value = item.documentation || '';
+                currentEditingItemId = id;
+                itemModal.style.display = 'flex';
+            }
+        }
+
+        function closeItemModal() {
+            itemModal.style.display = 'none';
+        }
+
+        function deleteItem(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
+                inventoryData = inventoryData.filter(item => item.id !== id);
+                localStorage.setItem('inventoryDataBarangMasuk', JSON.stringify(inventoryData));
+                renderInventoryTable(inventoryData);
+                alert('Barang berhasil dihapus.');
+            }
+        }
+
+        function openRequestApprovalModal(id) {
+            currentRequest = permintaanBarangData.find(req => req.id === id);
+            if (currentRequest) {
+                const correspondingInventoryItem = inventoryData.find(item => item.code === currentRequest.kode);
+                const stockAvailable = correspondingInventoryItem ? correspondingInventoryItem.quantity : 0;
+
+                detailKode.textContent = currentRequest.kode;
+                detailNama.textContent = currentRequest.nama_barang;
+                detailJumlahDiminta.textContent = currentRequest.jumlah_diminta;
+                detailStokTersedia.textContent = stockAvailable;
+                detailTanggalPermintaan.textContent = currentRequest.tanggal_permintaan;
+                detailBidang.textContent = currentRequest.bidang;
+                detailStatus.textContent = currentRequest.status; // Display current status
+
+                bendaharaNotesInput.value = currentRequest.catatan_bendahara || '';
+                approvedQuantityInput.value = currentRequest.jumlah_disetujui !== null ? currentRequest.jumlah_disetujui : currentRequest.jumlah_diminta; // Default to requested or previous approved
+                approvedQuantityInput.max = stockAvailable;
+
+                renderApprovalDiscussionLog(currentRequest.discussionLog); // Render discussion log
+                newApprovalDiscussionMessageInput.value = ''; // Clear message input
+
+                requestApprovalModal.style.display = 'flex';
+            }
+        }
+
+        function closeRequestApprovalModal() {
+            requestApprovalModal.style.display = 'none';
+            currentRequest = null;
+        }
+
+        // --- Discussion Log for Approval Modal ---
+        function renderApprovalDiscussionLog(log) {
+            approvalDiscussionLogContainer.innerHTML = '';
+            if (log && log.length > 0) {
+                log.forEach(entry => {
+                    const date = new Date(entry.timestamp);
+                    const formattedTimestamp = date.toLocaleString('id-ID', {
+                        year: 'numeric', month: 'long', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit'
+                    });
+                    const logItem = `
+                        <div class="discussion-log-item">
+                            <strong>${entry.sender}</strong> <span class="timestamp">(${formattedTimestamp})</span>
+                            <p>${entry.message}</p>
+                        </div>
+                    `;
+                    approvalDiscussionLogContainer.innerHTML += logItem;
+                });
+                approvalDiscussionLogContainer.scrollTop = approvalDiscussionLogContainer.scrollHeight; // Scroll to bottom
+            } else {
+                approvalDiscussionLogContainer.innerHTML = '<p style="text-align: center; color: #888;">Belum ada diskusi.</p>';
+            }
+        }
+
+        sendApprovalDiscussionMessageButton.addEventListener('click', () => {
+            const message = newApprovalDiscussionMessageInput.value.trim();
+            if (!message || !currentRequest) {
+                alert('Pesan tidak boleh kosong.');
+                return;
+            }
+
+            if (!currentRequest.discussionLog) {
+                currentRequest.discussionLog = [];
+            }
+            const senderRole = "Inventaris"; // Or "Bendahara"
+            currentRequest.discussionLog.push({
+                timestamp: new Date().toISOString(),
+                sender: senderRole,
+                message: message
+            });
+
+            // Update status to indicate it's now waiting for the requester's response
+            currentRequest.status = 'Menunggu Diskusi Pihak Peminta';
+            
+            localStorage.setItem('permintaanBarangData', JSON.stringify(permintaanBarangData));
+            renderApprovalDiscussionLog(currentRequest.discussionLog); // Update discussion log in modal
+            newApprovalDiscussionMessageInput.value = ''; // Clear input
+            alert('Balasan berhasil dikirim!');
+            detailStatus.textContent = currentRequest.status; // Update status displayed in the modal
+            updateNotificationBadgeOnBeranda(); // Update notification badge
+        });
+        // --- End Discussion Log for Approval Modal ---
+
+        // Event Listeners for Modals
+        openModalBtn.addEventListener('click', openAddModal);
+        closeModalBtn.addEventListener('click', closeItemModal);
+        cancelButton.addEventListener('click', closeItemModal);
+        closeRequestApprovalModalBtn.addEventListener('click', closeRequestApprovalModal);
+
+        // Close modals if clicked outside
+        itemModal.addEventListener('click', (e) => {
+            if (e.target === itemModal) {
+                closeItemModal();
+            }
+        });
+
+        requestApprovalModal.addEventListener('click', (e) => {
+            if (e.target === requestApprovalModal) {
+                closeRequestApprovalModal();
+            }
+        });
+
+        itemForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newItem = {
+                code: itemCode.value.trim(),
+                name: itemName.value.trim(),
+                quantity: parseInt(itemQuantity.value),
+                date: itemDate.value,
+                documentation: itemDocumentation.value.trim()
+            };
+
+            if (currentEditingItemId) {
+                inventoryData = inventoryData.map(item =>
+                    item.id === currentEditingItemId ? { ...item, ...newItem } : item
+                );
+                alert('Barang berhasil diupdate!');
+            } else {
+                const isDuplicate = inventoryData.some(item => item.code.toLowerCase() === newItem.code.toLowerCase());
+                if (isDuplicate) {
+                    alert('Kode Barang sudah ada. Harap gunakan kode yang berbeda.');
+                    return;
+                }
+                newItem.id = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+                inventoryData.push(newItem);
+                alert('Barang berhasil ditambahkan!');
+            }
+
+            localStorage.setItem('inventoryDataBarangMasuk', JSON.stringify(inventoryData));
+            renderInventoryTable(inventoryData);
+            closeItemModal();
+        });
+
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredData = inventoryData.filter(item =>
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                (item.documentation && item.documentation.toLowerCase().includes(searchTerm))
+            );
+            renderInventoryTable(filteredData);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+
+        uploadImageButton.addEventListener('click', () => {
+            modalImageInput.click();
+        });
+
+        modalImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    itemDocumentation.value = e.target.result;
+                    alert("Gambar berhasil diunggah ke kolom dokumentasi.");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        approveRequestButton.addEventListener('click', () => {
+            if (!currentRequest) return;
+
+            const approvedQuantity = parseInt(approvedQuantityInput.value);
+            const bendaharaNotes = bendaharaNotesInput.value.trim();
+            const correspondingInventoryItem = inventoryData.find(item => item.code === currentRequest.kode);
+
+            if (isNaN(approvedQuantity) || approvedQuantity < 0) {
+                alert('Jumlah Disetujui harus angka positif.');
+                return;
+            }
+
+            if (approvedQuantity > (correspondingInventoryItem ? correspondingInventoryItem.quantity : 0)) {
+                alert('Jumlah yang disetujui tidak boleh melebihi stok yang tersedia.');
+                return;
+            }
+
+            permintaanBarangData = permintaanBarangData.map(req => {
+                if (req.id === currentRequest.id) {
+                    req.catatan_bendahara = bendaharaNotes || (approvedQuantity > 0 ? 'Permintaan disetujui.' : 'Permintaan ditolak (jumlah 0 disetujui).');
+                    req.jumlah_disetujui = approvedQuantity;
+                    req.status = (approvedQuantity > 0) ? 'Disetujui' : 'Ditolak';
+                }
+                return req;
+            });
+            
+            if (approvedQuantity > 0 && correspondingInventoryItem) {
+                correspondingInventoryItem.quantity -= approvedQuantity;
+            }
+            
+            localStorage.setItem('inventoryDataBarangMasuk', JSON.stringify(inventoryData));
+            localStorage.setItem('permintaanBarangData', JSON.stringify(permintaanBarangData));
+            
+            alert(`Permintaan berhasil ${approvedQuantity > 0 ? 'disetujui' : 'ditolak'}!`);
+            
+            renderInventoryTable(inventoryData);
+            closeRequestApprovalModal();
+            updateNotificationBadgeOnBeranda(); // Update notification badge
+        });
+
+        rejectRequestButton.addEventListener('click', () => {
+            if (!currentRequest) return;
+
+            if (confirm('Apakah Anda yakin ingin menolak permintaan ini?')) {
+                permintaanBarangData = permintaanBarangData.map(req => {
+                    if (req.id === currentRequest.id) {
+                        req.status = 'Ditolak';
+                        req.catatan_bendahara = bendaharaNotesInput.value.trim() || 'Permintaan ditolak oleh Bendahara.';
+                        req.jumlah_disetujui = 0;
+                    }
+                    return req;
+                });
+                localStorage.setItem('permintaanBarangData', JSON.stringify(permintaanBarangData));
+                
+                alert('Permintaan berhasil ditolak!');
+                closeRequestApprovalModal();
+                updateNotificationBadgeOnBeranda(); // Update notification badge
+            }
+        });
+
+        // Profile Menu Dropdown functionality
+        const profileMenu = document.getElementById('profileMenu');
+        if (profileMenu) {
+            profileMenu.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.profile-menu') && !event.target.closest('.profile-menu')) {
+                    if (profileMenu.classList.contains('active')) {
+                        profileMenu.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Function to update the notification badge on Beranda
+        function updateNotificationBadgeOnBeranda() {
+            let permintaanBarangData = JSON.parse(localStorage.getItem('permintaanBarangData')) || [];
+            const pendingRequests = permintaanBarangData.filter(req =>
+                req.status === 'Menunggu' ||
+                req.status === 'Menunggu Diskusi Pihak Inventaris' ||
+                req.status === 'Menunggu Diskusi Pihak Peminta'
+            );
+
+            if (pendingRequests.length > 0) {
+                notificationBadgeBeranda.textContent = pendingRequests.length;
+                notificationBadgeBeranda.style.display = 'inline-block';
+            } else {
+                notificationBadgeBeranda.style.display = 'none';
+            }
+        }
+
+        // Initial renders when page loads
+        renderInventoryTable(inventoryData);
+        document.addEventListener('DOMContentLoaded', updateNotificationBadgeOnBeranda); // Call on load to set initial badge state
+    </script>
+</body>
+</html>
